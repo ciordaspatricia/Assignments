@@ -1,0 +1,132 @@
+---
+title: "assign1"
+author: "Ciordas Patricia"
+date: "12/21/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+##Task1
+##Reading processing data
+```{r}
+expeditions <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-09-22/expeditions.csv')
+
+library(tidyverse)
+library(dplyr)
+library("viridis")
+```
+
+##Exploring data
+```{r}
+summary(expeditions)
+theme_set(theme_light())
+view(expeditions)
+```
+
+##Expeditions plot
+```{r}
+expeditions %>%
+  mutate(peak_name = fct_lump(peak_name, n=15)) %>%
+  filter(peak_name != 'Other') %>%
+  ggplot() +
+  aes(x = peak_name, fill = season) +
+  geom_bar(show.legend = TRUE, width = 0.5) +
+  theme(legend.position = "bottom")+
+  scale_fill_viridis_d() +
+  labs (y="Number of expeditions", x=NULL, 
+        title="The 15 most popular peaks stacked by season of expedition") +
+  coord_flip()
+```
+
+##Task2
+##Reading processing data
+```{r}
+phd_field <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-02-19/phd_by_field.csv")
+install.packages("RColorBrewer")
+library(RColorBrewer)
+display.brewer.all()
+install.packages("scales")
+library(scales)
+library(dplyr)
+library(tidyverse)
+```
+
+##Exploring data
+```{r}
+view(phd_field)
+glimpse(phd_field)
+summary(phd_field)
+
+
+```
+
+##Plots
+```{r}
+ phd_field %>%
+  group_by(broad_field, year) %>%
+  summarise(n_phds = sum(n_phds, na.rm = TRUE)) %>%
+
+  ggplot() +
+  aes(x = year, y = n_phds, color = broad_field) + 
+  geom_line(size = 1.2) +
+    scale_x_continuous(breaks = scale(pretty_breaks(5)) +
+                     scale_y_continuous(labels = comma_format()) +
+  theme_minimal() +
+  scale_color_brewer(palette = "Dark2") +
+    labels(x = NULL, y = NULL, 
+           title = "Number of awarded Ph.D.-s in the US by year")
+  
+
+```
+
+##Task3
+##Reading processing data
+```{r}
+commute_mode <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-11-05/commute.csv")
+
+
+```
+##Exploring data
+```{r}
+summary(commute_mode)
+
+```
+
+##Plots
+```{r}
+state_commute <- commute_mode %>% 
+  group_by(state_abb,state_region)
+
+ state_commute %>%
+  ggplot() +
+  aes(x = "Walk", y = "Bike", color = state_region)+
+  geom_point(size = 2, show.legend = TRUE) +
+   labs(x = "Number of people walking to work (log N)", y = "Number of ppl biking to work (log N)", title = "Title Number of people walking vs. biking to work in each US state") +
+   theme_light()
+   
+   
+  
+```
