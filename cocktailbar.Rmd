@@ -43,6 +43,7 @@ glimpse(cocktail_clean)
 ```
 
 ## 2.Transform the data table and clean the ingredient variable!
+
 ```{r}
 cocktail_clean <- cocktail %>%
 separate_rows(ingredients, sep = "<br>", convert = TRUE)%>%
