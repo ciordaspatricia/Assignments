@@ -1,0 +1,118 @@
+---
+title: "Cocktail"
+author: "Ciordas Patricia"
+date: "12/21/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+##1.Read the data
+
+```{r}
+cocktail <- read_tsv('D:/PhD/Kurzusok/Adatelemzés R programnyelven/cocktail_data.tsv')
+library(tidyr)
+library(stringr)
+library(dplyr)
+library(tidyverse)
+view(cocktail)
+glimpse(cocktail_clean)
+```
+
+## 2.Transform the data table and clean the ingredient variable!
+```{r}
+cocktail_clean <- cocktail %>%
+separate_rows(ingredients, sep = "<br>", convert = TRUE)%>%
+  separate_rows(ingredients, sep = "<b4/>", convert = TRUE) %>%
+  separate_rows(ingredients, sep = "<br/>", convert = TRUE) 
+
+
+  gsub("[^A-Za-z ]","", cocktail_clean$ingredients)
+
+cocktail_clean$ingredients=sub("(.* (oz( of)?|(dash(es)?)|(drop(s)?)|(bsp))) ","",cocktail_clean$ingredients)
+
+
+```
+
+##3. All ingredients in alphabetical order
+```{r}
+ sort(unique(cocktail_clean$ingredients))
+```
+
+##4. Number of unique ingredients
+```{r}
+length(unique(cocktail_clean$ingredients))
+```
+## 5. What are the top 10 ingredients?
+```{r}
+top_ingredients <- head(arrange(cocktail_clean, desc(ingredients)), n = 10)
+```
+
+## 6. Which cocktail(s) has/have the most ingredients?
+```{r}
+cocktail_most_ing <- cocktail_clean %>%
+  count(name, sort = TRUE) %>% 
+  top_n(1)
+```
+
+## 7. How many ingredients appear in only one cocktail (rare ingredient)?
+
+```{r}
+one_ingredient <- cocktail_clean %>%
+ count(ingredients) %>% 
+  filter(n == 1)
+count(one_ingredient)
+```
+
+## 8. Which cocktail has an ingredient that is only used in one cocktail?
+
+```{r}
+one_cocktail <- cocktail_clean %>%
+  group_by(ingredients) %>% 
+  filter(n() == 1)
+
+cocktail_one <- unique(one_cocktail$name)
+```
+
+## 9. What are the cocktails without rare ingredients?
+```{r}
+without_rare <- cocktail_clean %>%
+  group_by(ingredients) %>% 
+  filter(n() != 1)
+cocktail_without_rare <- unique(without_rare$name)
+
+```
+
+## 10. Create a cheat sheet for the bartender!
+```{r}
+tribble(~name, ~Lime, ~`White rum`, ~`Cane sugar`, ~`Coca-cola`, ~Mint, ~Soda,
+        "Caipirissima", "X", "X", "X", "", "", "",
+        "Cuba Libre", "X", "X", "", "X","","",
+        "Mojito", "X", "X", "", "", "X", "X") %>%
+    relocate(name, sort(names(.)))
+
+
+```
