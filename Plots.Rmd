@@ -123,6 +123,7 @@ state_commute <- commute_mode %>%
 state_commute <- commute %>% 
   group_by(state_abb,state_region) %>% 
   summarise(walk = sum(n[mode == 'Walk'],bike = sum(n[mode == 'Bike'], na.rm = TRUE), na.rm = TRUE))
+  
  state_commute %>%
   ggplot() +
   aes(x = "Walk", y = "Bike", color = state_region)+
