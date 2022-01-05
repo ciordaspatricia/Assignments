@@ -117,19 +117,21 @@ summary(commute_mode)
 
 ##Plots
 ```{r}
-state_commute <- commute_mode %>% 
-  group_by(state_abb,state_region)
 
-state_commute <- commute %>% 
+state_commute <- commute_mode %>% 
   group_by(state_abb,state_region) %>% 
-  summarise(walk = sum(n[mode == 'Walk'],bike = sum(n[mode == 'Bike'], na.rm = TRUE), na.rm = TRUE))
+  summarise(bike = sum(n[mode == 'Bike'], na.rm = TRUE),walk = sum(n[mode == 'Walk'], na.rm = TRUE))
+
   
  state_commute %>%
-  ggplot() +
-  aes(x = "Walk", y = "Bike", color = state_region)+
-  geom_point(size = 2, show.legend = TRUE) +
-   labs(x = "Number of people walking to work (log N)", y = "Number of ppl biking to work (log N)", title = "Title Number of people walking vs. biking to work in each US state") +
-   theme_light()
+   ggplot() +
+   aes(x = walk, y = bike, color = state_region) +
+   geom_point(size = 2) + 
+   labs(x = "Number of ppl walking to work (log N)", y = "Number of ppl biking to work (log N)",
+        title = "Title number of people walking vs. biking to work in each USA state", color = "State         region") +
+   theme_light() +
+   scale_x_log10() + 
+   scale_y_log10()
    
    
   
