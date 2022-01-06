@@ -33,6 +33,7 @@ expeditions %>%
   mutate(peak_name = fct_lump(peak_name, n=15)) %>%
   filter(peak_name != 'Other') %>%
   ggplot() +
+
   aes(x = peak_name, fill = season) +
   geom_bar(show.legend = TRUE, width = 0.5) +
   theme(legend.position = "bottom")+
